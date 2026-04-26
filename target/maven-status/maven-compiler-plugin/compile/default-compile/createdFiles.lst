@@ -1,0 +1,10 @@
+com\example\audit\aspect\AuditLoggingAspect.class
+com\example\audit\service\AuditLogService.class
+com\example\audit\config\AuditAutoConfiguration.class
+com\example\audit\model\AuditLog.class
+com\example\audit\provider\DefaultAuditUserProvider.class
+com\example\audit\writer\AuditLogWriter.class
+com\example\audit\annotation\AutoAudit.class
+com\example\audit\provider\AuditUserProvider.class
+com\example\audit\provider\SecurityAuditUserProvider.class
+com\example\audit\writer\ConsoleAuditLogWriter.class
