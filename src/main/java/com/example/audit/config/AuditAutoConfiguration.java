@@ -8,6 +8,9 @@ import com.example.audit.service.AuditLogService;
 import com.example.audit.writer.AuditLogWriter;
 import com.example.audit.writer.ConsoleAuditLogWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -30,6 +33,17 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class AuditAutoConfiguration {
 
+    // 0. Khởi tạo một ObjectMapper riêng rẽ chuyên biệt cho Audit Log
+    // Để không ảnh hưởng/xung đột với ObjectMapper của dự án đích
+    @Bean(name = "auditObjectMapper")
+    public ObjectMapper auditObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        return mapper;
+    }
+
     // 1. Cấu hình ThreadPool riêng cho việc ghi log
     @Bean(name = "auditLogThreadPool")
     @ConditionalOnMissingBean(name = "auditLogThreadPool")
@@ -46,8 +60,8 @@ public class AuditAutoConfiguration {
     // 2. Cấu hình AuditLogWriter mặc định (nếu dev không tự custom)
     @Bean
     @ConditionalOnMissingBean
-    public AuditLogWriter consoleAuditLogWriter(ObjectMapper objectMapper) {
-        return new ConsoleAuditLogWriter(objectMapper);
+    public AuditLogWriter consoleAuditLogWriter(@Qualifier("auditObjectMapper") ObjectMapper auditObjectMapper) {
+        return new ConsoleAuditLogWriter(auditObjectMapper);
     }
 
     // 3. Cấu hình AuditUserProvider (Tự nhận diện có Spring Security hay không)
@@ -74,7 +88,7 @@ public class AuditAutoConfiguration {
     @Bean
     public AuditLoggingAspect auditLoggingAspect(AuditLogService auditLogService, 
                                                  AuditUserProvider auditUserProvider, 
-                                                 ObjectMapper objectMapper) {
-        return new AuditLoggingAspect(auditLogService, auditUserProvider, objectMapper);
+                                                 @Qualifier("auditObjectMapper") ObjectMapper auditObjectMapper) {
+        return new AuditLoggingAspect(auditLogService, auditUserProvider, auditObjectMapper);
     }
 }

@@ -23,6 +23,7 @@ public class AuditLogService {
      * 
      * @param auditLog thông tin cần lưu vết
      */
+
     @Async("auditLogThreadPool")
     public void processLog(AuditLog auditLog) {
         for (AuditLogWriter writer : logWriters) {
