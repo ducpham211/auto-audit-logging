@@ -52,7 +52,20 @@ public class AuditLoggingAspect {
 
         // Lấy tham số (serialize ra JSON)
         try {
-            auditLog.setArguments(objectMapper.writeValueAsString(joinPoint.getArgs()));
+            Object[] rawArgs = joinPoint.getArgs();
+            Object[] safeArgs = new Object[rawArgs.length];
+            for (int i = 0; i < rawArgs.length; i++) {
+                Object arg = rawArgs[i];
+                if (arg instanceof byte[] || arg instanceof java.io.InputStream || 
+                    arg instanceof java.io.OutputStream || arg instanceof java.io.File) {
+                    safeArgs[i] = "[BINARY_DATA]";
+                } else if (arg != null && arg.getClass().getName().contains("MultipartFile")) {
+                    safeArgs[i] = "[FILE_UPLOAD]";
+                } else {
+                    safeArgs[i] = arg;
+                }
+            }
+            auditLog.setArguments(objectMapper.writeValueAsString(safeArgs));
         } catch (JsonProcessingException e) {
             logger.warn("Failed to serialize arguments for audit log", e);
             auditLog.setArguments("N/A - Serialization Failed");

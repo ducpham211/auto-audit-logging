@@ -9,6 +9,7 @@ import com.example.audit.writer.AuditLogWriter;
 import com.example.audit.writer.ConsoleAuditLogWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -39,6 +40,12 @@ public class AuditAutoConfiguration {
     public ObjectMapper auditObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
+        
+        // Kích hoạt tính năng Data Masking
+        SimpleModule maskingModule = new SimpleModule();
+        maskingModule.setSerializerModifier(new MaskingBeanSerializerModifier());
+        mapper.registerModule(maskingModule);
+
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         return mapper;

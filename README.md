@@ -12,6 +12,8 @@
     *   Tham số đầu vào (Input Arguments).
     *   Trạng thái thực thi (Thành công / Ngoại lệ).
     *   Thời gian thực thi (Execution time).
+*   **Bảo vệ dữ liệu (Data Masking):** Tự động che giấu (mask) các dữ liệu nhạy cảm như password, thẻ tín dụng trong tham số trước khi ghi log.
+*   **An toàn bộ nhớ (Skip Large Objects):** Tự động bỏ qua các file dung lượng lớn (MultipartFile, byte[]) để tránh rủi ro tràn RAM (OutOfMemory).
 *   **Hiệu năng cao:** Ghi log hoàn toàn **bất đồng bộ (Asynchronous)**, không làm tăng thời gian phản hồi (latency) của giao dịch chính.
 *   **Linh hoạt:** Hỗ trợ đẩy log ra Console (JSON format) hoặc chèn xuống Database (PostgreSQL).
 
