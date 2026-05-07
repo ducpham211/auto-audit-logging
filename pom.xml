@@ -8,7 +8,7 @@
         <version>3.2.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.example</groupId>
+    <groupId>io.github.ducpham211</groupId>
     <artifactId>auto-audit-logging-starter</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>auto-audit-logging-starter</name>

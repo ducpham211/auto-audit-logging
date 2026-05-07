@@ -1,1 +1,2 @@
-com.example.audit.config.AuditAutoConfiguration
+io.github.ducpham211.audit.config.AuditAutoConfiguration
+
