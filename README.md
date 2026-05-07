@@ -1,82 +1,108 @@
 # Auto Audit Logging Starter
 
-**Auto Audit Logging Starter** là một thư viện (plug-and-play) dành cho hệ sinh thái Spring Boot. Dự án cung cấp một cơ chế tự động ghi nhận (lưu vết) toàn bộ các thao tác thay đổi dữ liệu nhạy cảm thông qua kỹ thuật lập trình hướng khía cạnh (AOP), giúp lập trình viên không cần phải viết code ghi log thủ công trong từng hàm xử lý nghiệp vụ.
+[![Java Support](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-## 🚀 Tính năng nổi bật
+**Auto Audit Logging Starter** is a plug-and-play library for the Spring Boot ecosystem. This project provides an automatic mechanism to track and log all sensitive data modifications using Aspect-Oriented Programming (AOP). It eliminates the need for developers to manually write logging code in every business logic function.
 
-*   **Tích hợp dễ dàng (Plug-and-play):** Hoạt động ngay lập tức chỉ với việc thêm dependency và cấu hình file `application.properties`.
-*   **Không xâm lấn (Non-Invasive):** Tách biệt hoàn toàn logic ghi log khỏi logic nghiệp vụ chính bằng cách sử dụng Custom Annotation `@AutoAudit`.
-*   **Thu thập dữ liệu chi tiết:** Tự động trích xuất:
-    *   Tên người thực hiện (từ Spring Security Context).
-    *   Tên Class và Method.
-    *   Tham số đầu vào (Input Arguments).
-    *   Trạng thái thực thi (Thành công / Ngoại lệ).
-    *   Thời gian thực thi (Execution time).
-*   **Bảo vệ dữ liệu (Data Masking):** Tự động che giấu (mask) các dữ liệu nhạy cảm như password, thẻ tín dụng trong tham số trước khi ghi log.
-*   **An toàn bộ nhớ (Skip Large Objects):** Tự động bỏ qua các file dung lượng lớn (MultipartFile, byte[]) để tránh rủi ro tràn RAM (OutOfMemory).
-*   **Hiệu năng cao:** Ghi log hoàn toàn **bất đồng bộ (Asynchronous)**, không làm tăng thời gian phản hồi (latency) của giao dịch chính.
-*   **Linh hoạt:** Hỗ trợ đẩy log ra Console (JSON format) hoặc chèn xuống Database (PostgreSQL).
+## 🚀 Key Features
 
-## 🛠 Yêu cầu hệ thống & Công nghệ
+*   **Plug-and-play Integration:** Works immediately just by adding the dependency and configuring the `application.properties` file.
+*   **Non-Invasive:** Completely separates logging logic from the main business logic using the Custom `@AutoAudit` Annotation.
+*   **Detailed Data Collection:** Automatically extracts:
+    *   Executor's name (from Spring Security Context).
+    *   Class and Method names.
+    *   Input Arguments.
+    *   Execution status (Success / Exception).
+    *   Execution time.
+*   **Data Masking:** Automatically masks sensitive data such as passwords and credit card numbers in the arguments before logging.
+*   **Memory Safe (Skip Large Objects):** Automatically skips large files (MultipartFile, byte[]) to avoid OutOfMemory (OOM) risks.
+*   **High Performance:** Logging is completely **Asynchronous**, ensuring zero latency impact on the main transaction.
+*   **Flexible:** Supports pushing logs to the Console (JSON format) or inserting into a Database (PostgreSQL).
+
+## 🏗 Architecture
+
+The library operates on a simple, high-performance asynchronous flow:
+
+```text
+Method call → @AutoAudit intercept (AOP)
+            → Extract context (user, args, time)
+            → Mask sensitive fields
+            → Async queue (ThreadPool)
+            → Log to Console / DB
+```
+
+*(Visual Flow)*
+```mermaid
+flowchart LR
+    A[Method call] -->|@AutoAudit| B(AOP Interceptor)
+    B --> C{Extract Context}
+    C -->|user, args, time| D[Mask Sensitive Fields]
+    D --> E[Async Queue / ThreadPool]
+    E --> F[(Log to Console / DB)]
+```
+
+## 🛠 System Requirements & Technologies
 
 *   **Java:** 17+
 *   **Framework:** Spring Boot 3.x, Spring AOP, Spring Data JPA
-*   **Cơ chế:** Đóng gói chuẩn theo cơ chế Auto-Configuration của Spring Boot 3 (`META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`).
+*   **Mechanism:** Standard packaged via Spring Boot 3 Auto-Configuration mechanism (`META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`).
 
 ---
 
-## 💻 Hướng dẫn chạy và cài đặt Local (Dành cho Developer)
+## 💻 Local Installation Guide (For Developers)
 
-Vì đây là một thư viện (Spring Boot Starter) cục bộ, bạn cần build và cài đặt nó vào Maven Local Repository trước khi sử dụng ở các project khác.
+Since this is a local Spring Boot Starter library, you need to build and install it into your local Maven Repository before using it in other projects.
 
-### 1. Build và Cài đặt thư viện
+### 1. Build and Install
 
-1.  Clone repository này về máy.
-2.  Mở Terminal (hoặc CMD/PowerShell) tại thư mục gốc của project (chứa file `pom.xml`).
-3.  Chạy lệnh sau để build và đẩy thư viện vào `.m2` local:
+1.  Clone this repository to your machine.
+2.  Open your Terminal (or CMD/PowerShell) at the project root directory (where `pom.xml` is located).
+3.  Run the following command to build and push the library to your local `.m2` repository:
 
 ```bash
 mvn clean install
 ```
 
-> **Lưu ý:** Nếu bạn đang dùng IDE như IntelliJ IDEA hay Eclipse, bạn có thể mở tab **Maven** -> chọn project -> **Lifecycle** -> chạy `clean` rồi chạy `install`.
+> **Note:** If you are using an IDE like IntelliJ IDEA or Eclipse, you can open the **Maven** tab -> select project -> **Lifecycle** -> run `clean` then `install`.
 
-Khi Terminal thông báo `BUILD SUCCESS`, thư viện đã sẵn sàng trên máy của bạn.
+When the Terminal shows `BUILD SUCCESS`, the library is ready on your machine.
 
 ---
 
-## 📖 Hướng dẫn sử dụng trong Project khác
+## 📖 Usage Guide in Other Projects
 
-Sau khi đã `install` thành công ở bước trên, bạn có thể áp dụng thư viện này vào bất kỳ project Spring Boot 3 nào.
+After successfully running `install` in the previous step, you can apply this library to any Spring Boot 3 project.
 
-### 1. Thêm Dependency
+### 1. Add Dependency
 
-Mở file `pom.xml` của project mà bạn muốn tích hợp, thêm dependency sau:
+Open the `pom.xml` file of the target project and add the following dependency:
 
 ```xml
 <dependency>
-    <groupId>com.example</groupId>
+    <groupId>io.github.ducpham211</groupId>
     <artifactId>auto-audit-logging-starter</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
-### 2. Bật tính năng Audit Logging
+### 2. Enable Audit Logging
 
-Thư viện sử dụng cơ chế `@ConditionalOnProperty`, do đó bạn cần kích hoạt nó một cách rõ ràng.
-Trong file `application.properties` (hoặc `application.yml`) của project, thêm cấu hình:
+The library uses the `@ConditionalOnProperty` mechanism, so you must explicitly enable it.
+In the `application.properties` (or `application.yml`) file of your project, add the configuration:
 
 ```properties
-# Kích hoạt thư viện Auto Audit Logging
+# Enable Auto Audit Logging library
 audit.enabled=true
 ```
 
-### 3. Sử dụng Annotation `@AutoAudit`
+### 3. Use the `@AutoAudit` Annotation
 
-Bạn chỉ cần đặt annotation `@AutoAudit` lên bất kỳ phương thức Service hoặc Controller nào mà bạn muốn lưu vết thao tác:
+You only need to place the `@AutoAudit` annotation on any Service or Controller method where you want to track operations:
 
 ```java
-import com.example.audit.annotation.AutoAudit;
+import io.github.ducpham211.audit.annotation.AutoAudit;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -84,12 +110,12 @@ public class UserService {
 
     @AutoAudit
     public void updateUserProfile(Long userId, String newName) {
-        // Logic nghiệp vụ của bạn ở đây...
+        // Your business logic here...
     }
 }
 ```
 
-Mỗi khi hàm `updateUserProfile` được gọi, hệ thống sẽ tự động quét, lấy thông tin và ghi lại log một cách bất đồng bộ ở background.
+Whenever the `updateUserProfile` function is called, the system will automatically scan, extract information, and record the log asynchronously in the background.
 
-## 🤝 Đóng góp (Contributing)
-Mọi đóng góp (Pull Request, Issues) đều được chào đón để làm cho thư viện trở nên hoàn thiện hơn!
+## 🤝 Contributing
+All contributions (Pull Requests, Issues) are welcome to make this library better!
