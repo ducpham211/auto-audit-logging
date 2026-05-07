@@ -36,11 +36,11 @@ Method call → @AutoAudit intercept (AOP)
 *(Visual Flow)*
 ```mermaid
 flowchart LR
-    A[Method call] -->|@AutoAudit| B(AOP Interceptor)
-    B --> C{Extract Context}
-    C -->|user, args, time| D[Mask Sensitive Fields]
-    D --> E[Async Queue / ThreadPool]
-    E --> F[(Log to Console / DB)]
+    A["Method call"] -->|"@AutoAudit"| B("AOP Interceptor")
+    B --> C{"Extract Context"}
+    C -->|"user, args, time"| D["Mask Sensitive Fields"]
+    D --> E["Async Queue / ThreadPool"]
+    E --> F[("Log to Console / DB")]
 ```
 
 ## 🛠 System Requirements & Technologies
