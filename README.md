@@ -117,5 +117,11 @@ public class UserService {
 
 Whenever the `updateUserProfile` function is called, the system will automatically scan, extract information, and record the log asynchronously in the background.
 
+## ✍️ Author
+
+**Pham Viet Duc** - [GitHub](https://github.com/ducpham211)
+
+- [LinkedIn](https://www.linkedin.com/in/viet-duc-pham-898459337/)
+
 ## 🤝 Contributing
 All contributions (Pull Requests, Issues) are welcome to make this library better!
